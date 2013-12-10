@@ -37,8 +37,6 @@ public:
     void enter(int nretries = 3) {
         unsigned int xact_status;
 
-        std::cout << isFallbackLocked() << std::endl;
-
         for (int attempt = 0; attempt <= nretries; ++attempt) {
             xact_status = _xbegin();
 
