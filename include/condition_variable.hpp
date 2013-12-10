@@ -23,7 +23,6 @@ public:
     XCondVar() : cv_counter_(0) {}
     ~XCondVar() = default;
 
-
     void wait(XScope<LockType>& scope) {
         // Record the current value of the counter to prevent lost wakeups in case another thread signals before
         // we make it into the futex
@@ -31,22 +30,26 @@ public:
         // Commit partial results
         scope.exit();
         // Wait if there has been no intervening signal
-        futex::wait(&futex_, counter_val);
+        futex::wait(&cv_counter_, counter_val);
         // Resume transactional execution
         scope.enter();
     };
+
     void signal(XScope<LockType>& scope) {
         scope.registerCommitCallback(std::bind(&XCondVar::signalCommit, this));
     }
+
     void signalCommit() {
         // this increment is atomic
         ++cv_counter_;
         // wake up a waiter
         futex::wake(&cv_counter_, 1);
     }
-    void broadcast() {
-        scope_.registerCommitCallback(std::bind(&XCondVar::broadcastCommit, this));
+
+    void broadcast(XScope<LockType>& scope) {
+        scope.registerCommitCallback(std::bind(&XCondVar::broadcastCommit, this));
     }
+
     void broadcastCommit() {
         // atomic increment
         ++cv_counter_;
