@@ -10,8 +10,6 @@
 // xsync
 #include "../include/scope.hpp"
 
-
-
 TEST(ScopeTest, ExecutesTransactionally) {
     pthread_mutex_t fallback;
     pthread_mutex_init(&fallback, nullptr);
@@ -20,7 +18,6 @@ TEST(ScopeTest, ExecutesTransactionally) {
         xsync::XScope<pthread_mutex_t> scope(fallback);
         wasTransactional = _xtest();
     }
-
 
     EXPECT_TRUE(wasTransactional);
     pthread_mutex_destroy(&fallback);
@@ -50,7 +47,6 @@ TEST(ScopeTest, ExecutesCommitCallback) {
         xsync::XScope<pthread_mutex_t> scope(fallback);
         scope.registerCommitCallback([&callback_ran]() { callback_ran = true; });
     }
-
 
     EXPECT_TRUE(callback_ran);
     pthread_mutex_destroy(&fallback);
