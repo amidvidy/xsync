@@ -11,3 +11,6 @@
 *.lai
 *.la
 *.a
+
+scope_tests
+condition_variable_tests

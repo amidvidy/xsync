@@ -30,6 +30,7 @@ public:
         return false;
     }
 
+    // These need to be specialized if the LockType is not a BasicLockable
     inline void lockFallback() { fallback_.lock();  }
     inline void unlockFallback() { fallback_.unlock(); }
 
