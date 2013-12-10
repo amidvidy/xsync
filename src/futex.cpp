@@ -1,4 +1,5 @@
-#include <linux/syscall.h>
+#include <unistd.h>
+#include <sys/syscall.h>
 #include <linux/futex.h>
 #include "../include/futex.hpp"
 
@@ -6,12 +7,12 @@ namespace xsync {
 
 namespace futex {
 
-int wait(int *futex, int val) {
-    return syscall(SYS_futex, futex, val, nullptr, nullptr, nullptr);
+int wait(std::atomic<int> *addr, int val) {
+    return syscall(SYS_futex, addr, FUTEX_WAIT_PRIVATE, val, nullptr, nullptr, nullptr);
 }
 
-int wake(int *futex, int thread_count) {
-    return syscall()
+int wake(std::atomic<int> *addr, int thread_count) {
+    return syscall(SYS_futex, addr, FUTEX_WAKE_PRIVATE, thread_count, nullptr, nullptr);
 }
 
 } // namespace futex

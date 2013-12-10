@@ -29,7 +29,7 @@ TEST_DIR = test
 CPPFLAGS += -isystem $(GTEST_DIR)/include
 
 # Flags passed to the C++ compiler.
-CXXFLAGS += -g -Wall -Wextra -pthread
+CXXFLAGS += -g -Wall -Wextra -pthread -std=c++11
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
@@ -75,12 +75,12 @@ gtest_main.a : gtest-all.o gtest_main.o
 # gtest_main.a, depending on whether it defines its own main()
 # function.
 
-condition_variable.o : $(SRC_DIR)/condition_variable.cpp $(HEADER_DIR)/condition_variable.hpp $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(SRC_DIR)/condition_variable.cpp
+futex.o: $(SRC_DIR)/futex.cpp $(HEADER_DIR)/futex.hpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(SRC_DIR)/futex.cpp
 
 condition_variable_tests.o : $(TEST_DIR)/condition_variable_tests.cpp \
 		             $(HEADER_DIR)/condition_variable.hpp $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(TEST_DIR)/condition_variable_tests.cpp
 
-condition_variable_tests : condition_variable.o condition_variable_tests.o gtest_main.a
+condition_variable_tests : condition_variable_tests.o gtest_main.a futex.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread -ltbb $^ -o $@

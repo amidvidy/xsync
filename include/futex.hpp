@@ -1,3 +1,4 @@
+#include <atomic>
 /*
  * Convenience functions around the futex API inspired by Ulrich Drepper's "Futexes Are Tricky"
  */
@@ -8,12 +9,12 @@ namespace futex {
 /*
  * If the value of the futex is still val, wait until woken by a signal or a call to futexWake.
  */
-int wait(int *futex, int val);
+int wait(std::atomic<int> *addr, int val);
 
 /*
  * Wake up at most thread_count threads from the wait queue of the given futex.
  */
-int wake(int *futex, int thread_count);
+int wake(std::atomic<int> *addr, int thread_count);
 
 } // namespace futex
 
