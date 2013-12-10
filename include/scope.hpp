@@ -39,7 +39,7 @@ private:
     void enter(int nretries = 3) {
         unsigned int xact_status;
 
-        for (int attempt = 0; attempt <= nretries) {
+        for (int attempt = 0; attempt <= nretries; ++attempt) {
             xact_status = _xbegin();
 
             if (xact_status == _XBEGIN_STARTED) {
