@@ -6,7 +6,6 @@
 
 // STL
 #include <functional>
-#include <iostream>
 
 // xsync
 #include "lock.hpp"
