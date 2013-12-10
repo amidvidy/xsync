@@ -33,7 +33,7 @@ CXXFLAGS += -g -Wall -Wextra -pthread -std=c++11
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-TESTS =  condition_variable_tests
+TESTS =  condition_variable_tests scope_tests
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -83,4 +83,10 @@ condition_variable_tests.o : $(TEST_DIR)/condition_variable_tests.cpp \
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(TEST_DIR)/condition_variable_tests.cpp
 
 condition_variable_tests : condition_variable_tests.o gtest_main.a futex.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread -ltbb $^ -o $@
+
+scope_tests.o : $(TEST_DIR)/scope_tests.cpp $(HEADER_DIR)/scope.hpp $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $(TEST_DIR)/scope_tests.cpp
+
+scope_tests : scope_tests.o gtest_main.a futex.o
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -lpthread -ltbb $^ -o $@

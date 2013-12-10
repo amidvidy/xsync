@@ -6,6 +6,7 @@
 
 // STL
 #include <functional>
+#include <iostream>
 
 // xsync
 #include "lock.hpp"
@@ -21,11 +22,7 @@ public:
 
     XScope(LockType& fallback) : fallback_(fallback), cb_registered_(false) { enter(); }
     ~XScope() { exit(); }
-private:
-    //friend class XCondVar;
 
-    std::function<void()> cb_;
-    bool cb_registered_;
 
     // The next few functions need to be specialized for each of the locktypes
     // passing a non-specialized lock will result in additional aborts
@@ -38,6 +35,8 @@ private:
 
     void enter(int nretries = 3) {
         unsigned int xact_status;
+
+        std::cout << isFallbackLocked() << std::endl;
 
         for (int attempt = 0; attempt <= nretries; ++attempt) {
             xact_status = _xbegin();
@@ -67,7 +66,6 @@ private:
                 }
             }
         }
-
         // Take fallback
         lockFallback();
     }
@@ -80,9 +78,7 @@ private:
         }
 
         // Execute callback
-        if (cb_registered) {
-            callback();
-        }
+        if (cb_registered_) cb_();
     }
 
     // Callback must not throw an exception since it is executed in the destructor
@@ -91,20 +87,35 @@ private:
         cb_ = callback;
     }
 
+
+private:
+    //friend class XCondVar;
+    std::function<void()> cb_;
+    bool cb_registered_;
     LockType &fallback_;
 };
 
 // These are lock-specific hacks to check the state without modifying memory.
 // Usually this state is private (for good reason), but we need to access it
 
-template<>
-bool XScope<spinlock_t>::isFallbackLocked() {
-    return *(reinterpret_cast<int*>(&fallback_)) != 0;
-}
+// template<>
+// bool XScope<spinlock_t>::isFallbackLocked() {
+//     return *(reinterpret_cast<int*>(&fallback_)) == 0;
+//}
 
 template<>
 bool XScope<pthread_mutex_t>::isFallbackLocked() {
     return fallback_.__data.__lock != 0;
+}
+
+template<>
+inline void XScope<pthread_mutex_t>::lockFallback() {
+    pthread_mutex_lock(&fallback_);
+}
+
+template<>
+inline void XScope<pthread_mutex_t>::unlockFallback() {
+    pthread_mutex_unlock(&fallback_);
 }
 
 
