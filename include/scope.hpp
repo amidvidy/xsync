@@ -83,8 +83,8 @@ public:
     }
 
     // Callback must not throw an exception since it is executed in the destructor
-    void registerCommitCallback(std::function<void()> &callback) {
-        cb_registered = true;
+    void registerCommitCallback(const std::function<void()> &callback) {
+        cb_registered_ = true;
         cb_ = callback;
     }
 

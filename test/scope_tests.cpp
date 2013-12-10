@@ -39,3 +39,19 @@ TEST(ScopeTest, MakesForwardProgress) {
     EXPECT_TRUE(true);
     pthread_mutex_destroy(&fallback);
 }
+
+TEST(ScopeTest, ExecutesCommitCallback) {
+    pthread_mutex_t fallback;
+    pthread_mutex_init(&fallback, nullptr);
+
+    bool callback_ran = false;
+
+    {
+        xsync::XScope<pthread_mutex_t> scope(fallback);
+        scope.registerCommitCallback([&callback_ran]() { callback_ran = true; });
+    }
+
+
+    EXPECT_TRUE(callback_ran);
+    pthread_mutex_destroy(&fallback);
+}
