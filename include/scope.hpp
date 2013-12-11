@@ -59,9 +59,8 @@ public:
                 if ((xact_status & _XABORT_EXPLICIT) && _XABORT_CODE(xact_status) == 0xFF) {
                     // We aborted because the lock was held
                     // wait until the lock is free and then retry
-                    //lockFallback();
-                    //unlockFallback();
-                    break;
+                    lockFallback();
+                    unlockFallback();
 
                 } else if (!(xact_status & _XABORT_RETRY)) {
                     // If the retry bit is not set, take fallback
