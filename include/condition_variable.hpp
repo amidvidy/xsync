@@ -3,6 +3,7 @@
 
 // STL
 #include <atomic>
+#include <limits>
 
 // xsync
 #include "lock.hpp"
