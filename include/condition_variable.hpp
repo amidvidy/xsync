@@ -1,3 +1,6 @@
+#ifndef CONDITION_VARIABLE_HPP
+#define CONDITION_VARIABLE_HPP
+
 // STL
 #include <atomic>
 
@@ -5,7 +8,6 @@
 #include "lock.hpp"
 #include "scope.hpp"
 #include "futex.hpp"
-
 
 namespace xsync {
 
@@ -61,3 +63,5 @@ private:
 };
 
 } // namespace xsync
+
+#endif

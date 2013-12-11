@@ -1,3 +1,6 @@
+#ifndef FUTEX_HPP
+#define FUTEX_HPP
+
 #include <atomic>
 /*
  * Convenience functions around the futex API inspired by Ulrich Drepper's "Futexes Are Tricky"
@@ -19,3 +22,5 @@ int wake(std::atomic<int> *addr, int thread_count);
 } // namespace futex
 
 } // namespace xsync
+
+#endif

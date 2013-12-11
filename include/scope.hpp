@@ -1,3 +1,6 @@
+#ifndef SCOPE_HPP
+#define SCOPE_HPP
+
 // PThreads
 #include <pthread.h>
 
@@ -118,3 +121,5 @@ inline void XScope<pthread_mutex_t>::unlockFallback() {
 
 
 } // namespace xsync
+
+#endif
