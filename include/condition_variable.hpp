@@ -28,7 +28,7 @@ public:
     void wait(XScope<LockType>& scope) {
         // Record the current value of the counter to prevent lost wakeups in case another thread signals before
         // we make it into the futex
-        int counter_val = cv_counter_.load();
+        int counter_val = cv_counter_;
         // Commit partial results
         scope.exit();
         // Wait if there has been no intervening signal
@@ -42,7 +42,7 @@ public:
     }
 
     void signalCommit() {
-        // this increment is atomic
+        // FIXME: this should be atomic
         ++cv_counter_;
         // wake up a waiter
         futex::wake(&cv_counter_, 1);
@@ -53,13 +53,13 @@ public:
     }
 
     void broadcastCommit() {
-        // atomic increment
+        // FIXME: this should be atomic
         ++cv_counter_;
         // wake 'em all up
         futex::wake(&cv_counter_, std::numeric_limits<int>::max());
     }
 private:
-    std::atomic<int> cv_counter_;
+   int cv_counter_;
 };
 
 } // namespace xsync
