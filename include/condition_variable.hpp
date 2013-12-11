@@ -59,7 +59,7 @@ public:
         futex::wake(&cv_counter_, std::numeric_limits<int>::max());
     }
 private:
-   volatile int cv_counter_;
+    int cv_counter_;
 };
 
 } // namespace xsync
