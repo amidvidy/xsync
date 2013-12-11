@@ -29,7 +29,6 @@ TEST(ConditionVariableTest, SignalNoWaiter) {
 
 
 TEST(ConditionVariableTest, SignalOneWaiter) {
-    for (int i = 0; i < 100; ++i) {
     // Threads share the same fallback lock
     pthread_mutex_t fallback;
     pthread_mutex_init(&fallback, nullptr);
@@ -75,9 +74,6 @@ TEST(ConditionVariableTest, SignalOneWaiter) {
     // Check that vectors have same contents
     for (int i = 0; i < 3; ++i) {
         EXPECT_EQ(expected[i], buf[i]);
-    }
-
-
     }
 }
 
