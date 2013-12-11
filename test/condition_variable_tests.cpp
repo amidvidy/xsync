@@ -27,7 +27,62 @@ TEST(ConditionVariableTest, SignalNoWaiter) {
     SUCCEED();
 }
 
+
 TEST(ConditionVariableTest, SignalOneWaiter) {
+    for (int i = 0; i < 100; ++i) {
+    // Threads share the same fallback lock
+    pthread_mutex_t fallback;
+    pthread_mutex_init(&fallback, nullptr);
+
+    // We'll let the thread append to this vector and check
+    // the resulting order
+    int buf[3];
+    int *cur = buf;
+
+    // All threads are synchronized on this cv
+    xsync::XCondVar<pthread_mutex_t> cv;
+    // All threads share the same fallback lock
+
+    std::thread waiter([&cv, &cur, &fallback]() {
+        {
+            // execute transactionally
+            xsync::XScope<pthread_mutex_t> scope(fallback);
+            // This should be the first value
+            *cur = 1; ++cur;
+            // wait
+            cv.wait(scope);
+            // this should be the third value
+            *cur = 3; ++cur;
+        }
+    });
+
+    // Let the waiter get to the CV
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+    {
+        xsync::XScope<pthread_mutex_t> scope(fallback);
+        // This should be the second value
+        *cur = 2; ++cur;
+        // Signal to the waiter
+        cv.signal(scope);
+    }
+
+    // Let the waiter finish
+    waiter.join();
+
+    int expected[] = {1, 2, 3};
+
+    // Check that vectors have same contents
+    for (int i = 0; i < 3; ++i) {
+        EXPECT_EQ(expected[i], buf[i]);
+    }
+
+
+    }
+}
+
+/*
+TEST(ConditionVariableTest, SignalTwoWaiters) {
     // Threads share the same fallback lock
     pthread_mutex_t fallback;
     pthread_mutex_init(&fallback, nullptr);
@@ -40,7 +95,7 @@ TEST(ConditionVariableTest, SignalOneWaiter) {
     xsync::XCondVar<pthread_mutex_t> cv;
     // All threads share the same fallback lock
 
-    std::thread waiter([&cv, &vec, &fallback]() {
+    std::thread waiter1([&cv, &vec, &fallback]() {
         {
             // execute transactionally
             xsync::XScope<pthread_mutex_t> scope(fallback);
@@ -50,9 +105,22 @@ TEST(ConditionVariableTest, SignalOneWaiter) {
             cv.wait(scope);
             // this should be the third value
             vec.push_back(3);
-
         }
     });
+
+    std::thread waiter2([&cv, &vec, &fallback]() {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        {
+            // execute transan
+            xsync::XScope<pthread_mutex_t> scope(fallback);
+            // This should be the first value
+            vec.push_back(1);
+            // wait
+            cv.wait(scope);
+            // this should be the third value
+            vec.push_back(3);
+         }
+     });
 
     // Let the waiter get to the CV
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -77,3 +145,4 @@ TEST(ConditionVariableTest, SignalOneWaiter) {
         EXPECT_EQ(expected[i], vec[i]);
     }
 }
+*/
