@@ -26,6 +26,8 @@ public:
     XScope(LockType& fallback) : fallback_(fallback) { enter(); }
     ~XScope() { exit(); }
 
+    // No copy
+    XScope(const XScope& other) = delete;
 
     // The next few functions need to be specialized for each of the locktypes
     // passing a non-specialized lock will result in additional aborts

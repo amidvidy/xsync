@@ -25,6 +25,9 @@ public:
     XCondVar() : cv_counter_(0) {}
     ~XCondVar() = default;
 
+    // No copy
+    XCondVar(const XCondVar& other) = delete;
+
     void wait(XScope<LockType>& scope) {
         // Record the current value of the counter to prevent lost wakeups in case another thread signals before
         // we make it into the futex
