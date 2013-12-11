@@ -73,10 +73,10 @@ public:
     }
 
     void exit() {
-        if (_xtest()) {
-            _xend();
-        } else {
+        if (isFallbackLocked()) {
             unlockFallback();
+        } else {
+            _xend();
         }
 
         // Execute callback
