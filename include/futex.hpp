@@ -12,12 +12,12 @@ namespace futex {
 /*
  * If the value of the futex is still val, wait until woken by a signal or a call to futexWake.
  */
-int wait(int *addr, int val);
+int wait(volatile int *addr, int val);
 
 /*
  * Wake up at most thread_count threads from the wait queue of the given futex.
  */
-int wake(int *addr, int thread_count);
+int wake(volatile int *addr, int thread_count);
 
 } // namespace futex
 

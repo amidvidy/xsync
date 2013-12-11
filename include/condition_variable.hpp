@@ -43,7 +43,7 @@ public:
 
     void signalCommit() {
         // FIXME: this should be atomic
-        ++cv_counter_;
+        __sync_fetch_and_add(&cv_counter_, 1);
         // wake up a waiter
         futex::wake(&cv_counter_, 1);
     }
@@ -54,12 +54,12 @@ public:
 
     void broadcastCommit() {
         // FIXME: this should be atomic
-        ++cv_counter_;
+        __sync_fetch_and_add(&cv_counter_, 1);
         // wake 'em all up
         futex::wake(&cv_counter_, std::numeric_limits<int>::max());
     }
 private:
-   int cv_counter_;
+   volatile int cv_counter_;
 };
 
 } // namespace xsync

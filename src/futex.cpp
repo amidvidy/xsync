@@ -7,11 +7,11 @@ namespace xsync {
 
 namespace futex {
 
-int wait(int *addr, int val) {
+int wait(volatile int *addr, int val) {
     return syscall(SYS_futex, addr, FUTEX_WAIT_PRIVATE, val, nullptr, nullptr, nullptr);
 }
 
-int wake(int *addr, int thread_count) {
+int wake(volatile int *addr, int thread_count) {
     return syscall(SYS_futex, addr, FUTEX_WAKE_PRIVATE, thread_count, nullptr, nullptr);
 }
 
