@@ -9,6 +9,7 @@
 
 // STL
 #include <functional>
+#include <vector>
 
 // xsync
 #include "lock.hpp"
@@ -22,7 +23,7 @@ template <typename LockType>
 class XScope {
 public:
 
-    XScope(LockType& fallback) : fallback_(fallback), cb_registered_(false) { enter(); }
+    XScope(LockType& fallback) : fallback_(fallback) { enter(); }
     ~XScope() { exit(); }
 
 
@@ -79,21 +80,21 @@ public:
             _xend();
         }
 
-        // Execute callback
-        if (cb_registered_) cb_();
+        // Execute callbacks
+        for (std::function<void()> &cb : cbs_) {
+            cb();
+        }
     }
 
     // Callback must not throw an exception since it is executed in the destructor
-    void registerCommitCallback(const std::function<void()> &callback) {
-        cb_registered_ = true;
-        cb_ = callback;
+    void registerCommitCallback(const std::function<void()> &cb) {
+        cbs_.push_back(cb);
     }
 
 
 private:
     //friend class XCondVar;
-    std::function<void()> cb_;
-    bool cb_registered_;
+    std::vector<std::function<void()>> cbs_;
     LockType &fallback_;
 };
 
